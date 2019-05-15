@@ -9,7 +9,7 @@ public class DiceTray {
 	
 	boolean used[][];
 	FileReader reader;
-	private char[][] board = new char[4][4];
+	private final char[][] board;
 	
 	private boolean prints = false;
 	
@@ -29,9 +29,9 @@ public class DiceTray {
 
 	}
 	
-	public DiceTray(){
-		
-		Die[][] dice = new Die[4][4];
+	public DiceTray(int width, int height) {
+
+		board = new char[height][width];
 		
 		ArrayList<String> stringDice = new ArrayList<String>();
 		stringDice.add("LRYTTE");
@@ -54,18 +54,23 @@ public class DiceTray {
 		//Loop that goes through each die slot and assigns it a random die
 		//Perhaps the Die class is not needed?
 		Random rand = new Random();
-		for (int i = 0; i < 4; i++) {
-			for (int j = 0; j < 4; j++) {
-				int indexToAdd = rand.nextInt(stringDice.size());
-				dice[i][j] = new Die(stringDice.get(indexToAdd));
-				stringDice.remove(indexToAdd);
-				board[i][j] = dice[i][j].visibleChar;
-			}		
+		for (int i = 0; i < height; i++) {
+			for (int j = 0; j < width; j++) {
+				if (stringDice.isEmpty()) {
+					// The default boggle only supports 16 dice. If playing with a larger board, just make up random dice for the rest.
+					board[i][j] = (char) ('A' + rand.nextInt(26));
+				} else {
+					int indexToAdd = rand.nextInt(stringDice.size());
+					Die die = new Die(stringDice.get(indexToAdd));
+					stringDice.remove(indexToAdd);
+					board[i][j] = die.visibleChar;
+				}
+			}
 		}
 		
 		//Loop that prints out a ASCI picture of the board; uneeded
-		for (int i = 0; i < 4; i++) {
-			for (int j = 0; j < 4; j++) {
+		for (int i = 0; i < height; i++) {
+			for (int j = 0; j < width; j++) {
 				System.out.print(board[i][j] + " ");
 			}
 			System.out.println();
@@ -75,6 +80,14 @@ public class DiceTray {
 	//Constructor for making a custom board, ignoring the offical dice
 	public DiceTray(char[][] board) {
 		this.board = board;
+	}
+
+	public int getWidth() {
+		return board[0].length;
+	}
+
+	public int getHeight() {
+		return board.length;
 	}
 	
 	//Returns the board
@@ -98,9 +111,9 @@ public class DiceTray {
 			System.out.println("Searching for: '" + str + "'");
 		boolean found = false;
 		
-		for (int i = 0; i < 4; i++) {
-			for (int j = 0; j < 4; j++) {
-				used = new boolean[4][4];
+		for (int i = 0; i < getHeight(); i++) {
+			for (int j = 0; j < getWidth(); j++) {
+				used = new boolean[getHeight()][getWidth()];
 				if (found)
 					return true;
 				else if (board[i][j] == str.charAt(0)) {
@@ -168,8 +181,8 @@ public class DiceTray {
 				// If newX,newY is a valid position, then push it onto our list 
 				if (newX >= 0 &&
 					newY >= 0 &&
-					newX < 4 &&
-					newY < 4 &&
+					newX < getWidth() &&
+					newY < getHeight() &&
 					(xMod != 0 || yMod != 0) && // Skip the char at X,Y; this is the one we are looking around from
 					board[newY][newX] == c
 				) {

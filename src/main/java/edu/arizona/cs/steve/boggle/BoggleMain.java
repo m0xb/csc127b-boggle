@@ -14,7 +14,7 @@ import java.util.Scanner;
 
 public class BoggleMain extends JFrame {
 
-	private JButton[][] diceButtons = new JButton[4][4];
+	private JButton[][] diceButtons;
 	private DiceTray dt;
 	private SimpleList<String> submittedWords = new SimpleList<String>(
 			"User Submitted Words");
@@ -38,12 +38,21 @@ public class BoggleMain extends JFrame {
 	private ArrayList<String> incorrectWords;
 
 	public static void main(String[] args) {
-		JFrame window = new BoggleMain();
+		Dimension boardDimensions = readDimensions(args);
+		JFrame window = new BoggleMain(boardDimensions.width, boardDimensions.height);
 		window.setMinimumSize(new Dimension(325, 269));
 		window.setVisible(true);
 	}
 
-	public BoggleMain() {
+	private static Dimension readDimensions(String[] args) {
+		if (args.length >= 2) {
+			return new Dimension(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
+		} else {
+			return new Dimension(4, 4);
+		}
+	}
+
+	public BoggleMain(int width, int height) {
 		// Step 1: Setup the dictionary
 		// AGFQ: user should be able to start a 'new game' by remaking the
 		// dicetray object, do we really need to remake the wordlist here?
@@ -60,9 +69,10 @@ public class BoggleMain extends JFrame {
 		} catch (IllegalAccessException e) {
 		} catch (UnsupportedLookAndFeelException e) {
 		}
-		dt = new DiceTray();
-		for (int i = 0; i < 4; i++) {
-			for (int j = 0; j < 4; j++) {
+		dt = new DiceTray(width, height);
+		diceButtons = new JButton[height][width];
+		for (int i = 0; i < dt.getHeight(); i++) {
+			for (int j = 0; j < dt.getWidth(); j++) {
 				String buttonLabel = dt.getBoard()[i][j] + "";
 				if (buttonLabel.equalsIgnoreCase("Q"))
 					buttonLabel = "Qu";
@@ -91,7 +101,7 @@ public class BoggleMain extends JFrame {
 		setTitle("Boggle");
 		setIconImage(new ImageIcon("icon3.png").getImage());
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setSize(400, 300);
+		setSize(200 + 50*dt.getWidth(), 100 + 43*dt.getHeight());
 		setLocation(375, 240);
 
 		// Create the menubar and requisite menu items
@@ -119,11 +129,11 @@ public class BoggleMain extends JFrame {
 		topCP.setLayout(new BoxLayout(topCP, BoxLayout.X_AXIS));
 
 		JPanel boggleTrayPanel = new JPanel();
-		boggleTrayPanel.setLayout(new GridLayout(4, 4));
-		boggleTrayPanel.setMinimumSize(new Dimension(200, 170)); // 185,170
-		boggleTrayPanel.setMaximumSize(new Dimension(200, 170));
-		for (int i = 0; i < 4; i++) {
-			for (int j = 0; j < 4; j++) {
+		boggleTrayPanel.setLayout(new GridLayout(dt.getHeight(), dt.getWidth()));
+		boggleTrayPanel.setMinimumSize(new Dimension(50*dt.getWidth(), 43*dt.getHeight())); // 185,170
+		boggleTrayPanel.setMaximumSize(new Dimension(50*dt.getWidth(), 43*dt.getHeight()));
+		for (int i = 0; i < dt.getHeight(); i++) {
+			for (int j = 0; j < dt.getWidth(); j++) {
 				boggleTrayPanel.add(diceButtons[i][j]);
 				diceButtons[i][j].setMinimumSize(new Dimension(45, 45));
 				diceButtons[i][j].setPreferredSize(new Dimension(50, 50));
@@ -246,8 +256,8 @@ public class BoggleMain extends JFrame {
 			submitWordButton.setEnabled(false);
 			finishedButton.setEnabled(false);
 			finished_mui.setEnabled(false);
-			for (int i = 0; i < 4; i++) {
-				for (int j = 0; j < 4; j++) {
+			for (int i = 0; i < dt.getHeight(); i++) {
+				for (int j = 0; j < dt.getWidth(); j++) {
 					diceButtons[i][j].setEnabled(false);
 				}
 			}
@@ -341,9 +351,9 @@ public class BoggleMain extends JFrame {
 			System.out.println("\nSTARTING NEW GAME");
 
 			submittedWords = new SimpleList<String>("User Submitted Words");
-			dt = new DiceTray();
-			for (int i = 0; i < 4; i++) {
-				for (int j = 0; j < 4; j++) {
+			dt = new DiceTray(dt.getWidth(), dt.getHeight());
+			for (int i = 0; i < dt.getHeight(); i++) {
+				for (int j = 0; j < dt.getWidth(); j++) {
 					String buttonLabel = dt.getBoard()[i][j] + "";
 					if (buttonLabel.equalsIgnoreCase("Q"))
 						buttonLabel = "Qu";
@@ -404,8 +414,8 @@ public class BoggleMain extends JFrame {
 	private void findAllWords(String filePath) {
 
 		String possible = "";
-		for (int i = 0; i < 4; i++) {
-			for (int j = 0; j < 4; j++) {
+		for (int i = 0; i < dt.getHeight(); i++) {
+			for (int j = 0; j < dt.getWidth(); j++) {
 				possible += dt.getBoard()[i][j];
 
 			}

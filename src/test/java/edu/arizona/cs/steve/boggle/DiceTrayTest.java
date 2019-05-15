@@ -131,7 +131,7 @@ public class DiceTrayTest {
 	}
 	@Test
 	public void testRandomDiceRoll(){
-		tray = new DiceTray();
+		tray = new DiceTray(4, 4);
 		
 	}
 	
