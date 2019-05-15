@@ -1,3 +1,4 @@
+package edu.arizona.cs.steve.boggle;
 
 public class SimpleList<E> {
 	

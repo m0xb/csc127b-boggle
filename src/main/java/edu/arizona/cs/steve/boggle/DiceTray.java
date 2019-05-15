@@ -1,3 +1,5 @@
+package edu.arizona.cs.steve.boggle;
+
 import java.awt.Point;
 import java.io.FileReader;
 import java.util.ArrayList;

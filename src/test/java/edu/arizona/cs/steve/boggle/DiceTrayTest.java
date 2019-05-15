@@ -1,3 +1,5 @@
+package edu.arizona.cs.steve.boggle;
+
 import static org.junit.Assert.*;
 import org.junit.Test;
 
